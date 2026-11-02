@@ -6,9 +6,9 @@
 
 | Campo | Valor |
 |---|---|
-| Origem | `PRKing_REA@fd30f89c5bf02479c10cfb98b7c5baca3e786200`, arquivo `registros/uo-classic/especificacao.md` |
+| Origem | `PRKing_REA@5d11c0d64b69d5c0a5801ed5e4e6766b8ce71c05`, arquivo `registros/uo-classic/especificacao.md` |
 | Entregue em | 2026-11-02 |
-| SHA-256 do arquivo de origem | `4847f3340194631cd404025473af20c224582199637bd2c2d161a7adc9438099` |
+| SHA-256 do arquivo de origem | `7711e74f04b261b47c85c74f83964fb38453c7ba66759bb67d1ff7f6df24183a` |
 | Cabeçalho acrescentado na cópia | três linhas no topo do YAML: `origem`, `entregue_em` e `sha256_origem` |
 
 Conferência: tirando as linhas 2 a 4 da cópia, o SHA-256 do resto é igual ao da origem. A conta vale para o conteúdo guardado no git (fim de linha LF), não para a cópia de trabalho, que o `core.autocrlf` pode converter. Exemplo em Git Bash: `git show HEAD:docs/spec/especificacao.md | sed '2,4d' | sha256sum`.
@@ -26,11 +26,14 @@ Conferência: tirando as linhas 2 a 4 da cópia, o SHA-256 do resto é igual ao 
 
 | Data | Origem (commit do PRKing_REA) | O que trouxe | Commit no PRKing_UO |
 |---|---|---|---|
-| 2026-11-02 | `fd30f89` | Primeira entrega: seções 1–18, adendos até 2026-11-01 (D1–D11 e reavaliação legal) e Anexo A com a resolução de 2026-11-02 (A.4 e A.5) | commit de entrega desta pasta |
+| 2026-11-02 | `fd30f89` | Primeira entrega: seções 1–18, adendos até 2026-11-01 (D1–D11 e reavaliação legal) e Anexo A com a resolução de 2026-11-02 (A.4 e A.5) | `20f5e8c` |
+| 2026-11-02 | `5d11c0d` | Adendo A.6: decisões do responsável sobre A2, A7, A18 e A26; Anexo A resolvido; seção 2 marcada com o passo de 25 ms | commit de entrega desta versão |
 
-## Decisões pendentes do responsável
+## Decisões do responsável
 
-Listadas na especificação, Anexo A, A.5: destino da Story 1.2 (A2), nome da pasta e dos arquivos do repositório (A7), tique da simulação (A18) e licença do Outrora (A26). A D3 (resistência a magia) fica adiada até a magia.
+O Anexo A está resolvido (especificação, A.6, 2026-11-02): a Story 1.2 saiu do repositório (A2); os arquivos do PRD e do dossiê ganharam nomes neutros, e a pasta e o repositório serão renomeados antes de o repositório ficar público (A7); passo de 25 ms para timers de ação e IA, com sistemas pesados em fatias de 10 Hz (A18); todos os direitos reservados enquanto local, com a licença decidida antes de publicar (A26).
+
+Seguem em aberto: a D3 (resistência a magia), adiada até a magia, e a renomeação da pasta e do repositório, com prazo antes da publicação.
 
 ## Pergunta de volta (como pedir um adendo)
 
