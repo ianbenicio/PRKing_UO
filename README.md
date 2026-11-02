@@ -40,6 +40,7 @@ Mundo isométrico navegável; stats e skills com ganho; combate corpo a corpo co
 - [Fontes e política de evidências](docs/research/source-ledger.md)
 - [PRD](docs/prd/prd.md)
 - [Arquitetura Unity offline](docs/architecture/unity-offline-architecture.md)
+- [Sandbox de testes](docs/architecture/sandbox-de-testes.md)
 - [Roadmap](docs/roadmap.md)
 - [Story 1.1 — fundação e vertical slice](docs/stories/1.1-unity-foundation-and-local-vertical-slice.md)
 
@@ -51,4 +52,4 @@ A pasta e o repositório `PRKing_UO` serão renomeados para um nome neutro antes
 
 ## Próximo passo operacional
 
-Instalar o Unity 6.6 (6000.6.7f1), validar a Story 1.1 revisada e construir um vertical slice pequeno: mapa isométrico em chunks, personagem, combate corpo a corpo contra uma criatura, loot, um vendedor e save/load local.
+Instalar o Unity 6.6 (6000.6.7f1), validar a Story 1.1 revisada e construir um vertical slice pequeno na cena sandbox: mapa isométrico em chunks, personagem, combate corpo a corpo contra uma criatura, loot, um vendedor e save/load local.

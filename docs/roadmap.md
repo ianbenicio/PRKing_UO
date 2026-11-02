@@ -21,7 +21,7 @@ Gate: decisão explícita sobre direção de arte antes de produção de conteú
 - migração para a Unity 6.7 LTS quando sair (prevista para o quarto trimestre de 2026; a 6.6 não é LTS);
 - assemblies e domínio C# puro;
 - provedor de recursos com a origem "próprio" e IDs próprios (especificação §3.0);
-- mapa isométrico pequeno em chunks;
+- cena sandbox de 64 × 64 tiles em chunks, com as estações da Fase 1 e o painel de depuração ([sandbox de testes](architecture/sandbox-de-testes.md));
 - movimento, câmera, interação e um container;
 - combate corpo a corpo, uma criatura com IA simples, loot e um vendedor;
 - save/load atômico;
@@ -33,9 +33,11 @@ Gate: ciclo mover → combater → saquear → vender → salvar → carregar fu
 
 - criação de personagem (D6), stats, skills, caps e travas (D5);
 - ganho de skill e de stat por uso (especificação §4.2 e §5.4–§5.5);
+- regeneração de vida e estamina (especificação §4.3);
 - containers aninhados, peso, equipment, durability e stacks;
 - tooltips, paperdoll, skills e hotbar;
-- content catalog e validators.
+- content catalog e validators;
+- sandbox: estações de criação, treino, regeneração e vestiário.
 
 Gate: 500 itens instanciados e dez ciclos de save/load sem perda ou duplicação.
 
@@ -45,10 +47,11 @@ Gate: 500 itens instanciados e dez ciclos de save/load sem perda ou duplicação
 - elevação, portas, interiores e roofs;
 - leitor opcional da instalação, só em tempo de execução e só para uso pessoal: recorte do mapa real, uma cidade e arredores (D8);
 - melee, armor, parry (D4) e durabilidade; arco PODE;
-- morte, fantasma e ressurreição (curandeiro e santuário);
+- morte, fantasma e ressurreição (curandeiro e santuário); bandagens (especificação §8.1);
 - loot (D10), corpos e itens no chão (D11);
 - cidade com vendedor, banqueiro, curandeiro e guarda; notoriedade básica contra NPCs;
-- dia e noite (D9).
+- dia e noite (D9);
+- sandbox: estações de elevação, capela, enfermaria, banco, guarda, céu, escudo, desgaste, baú mágico e animais.
 
 Gate: loop básico completo numa cidade e arredores com uma área de criaturas (especificação §1 e §10.1), dentro do budget de frame e memória.
 
@@ -58,7 +61,8 @@ Gate: loop básico completo numa cidade e arredores com uma área de criaturas (
 - mining, lumberjacking, fishing e harvesting;
 - ferramentas, estações, recipes, qualidade, repair e recycle;
 - vendors, estoque, preços, gold, faucets e sinks;
-- simulador econômico headless.
+- simulador econômico headless;
+- sandbox: estações de magia (círculo de conjuração), jazidas, oficina e, quando entrar, veneno.
 
 Gate: 30 dias simulados sem inflação ou escassez irreversível.
 

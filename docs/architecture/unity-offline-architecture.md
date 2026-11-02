@@ -114,6 +114,7 @@ PRKing_UO/
     │       ├── Scenes/
     │       │   ├── Bootstrap.unity
     │       │   ├── MainMenu.unity
+    │       │   ├── Sandbox.unity           # cena de testes que cresce por fase
     │       │   └── Game.unity
     │       ├── Scripts/
     │       │   ├── Domain/
@@ -229,7 +230,8 @@ Definição e instância nunca se confundem. Uma espada pode referenciar `item.s
 - ações usam tempo de simulação, não `Time.deltaTime` diretamente;
 - relógio de mundo desacoplado do wall clock;
 - pause congela simulação, mas não UI;
-- speed 1×/2× opcional somente depois de testes de combat/crafting.
+- speed 1×/2× opcional somente depois de testes de combat/crafting;
+- no build de desenvolvimento, o relógio aceita pausar, avançar um passo e avançar N minutos rodando os passos sem desenhar; é assim que o [sandbox de testes](sandbox-de-testes.md) testa corpos, reposição e dia e noite sem esperar.
 
 Cada tick processa uma fila limitada. Sistemas pesados — path requests, economia global, planejamento distante — são distribuídos em slots para evitar spikes.
 
@@ -301,6 +303,7 @@ Regras:
 - autosave por tempo e em transições seguras;
 - save manual nunca sobrescreve o único backup válido;
 - carregar falha com mensagem e opção de backup, não com mundo parcial;
+- o journal guarda os comandos aceitos desde o último snapshot; snapshot + semente + journal reexecutam a sessão de forma determinística, o que serve para recuperar o save e para reproduzir defeitos;
 - o save guarda o estado autoritativo (entidades, timers com tempo restante, relógio do mundo, semente do sorteio) e só IDs próprios; nada lido da instalação vai para o save, inclusive `screenshot.png`, que só é gravado com a origem "próprio" (especificação §3.0 e §15).
 
 ## 13. UI
@@ -326,7 +329,8 @@ Regras:
 - economy ledger;
 - pathfinding e arrival points;
 - serialization, checksum e migrations;
-- determinismo com seed.
+- determinismo com seed;
+- roteiros das estações do [sandbox](sandbox-de-testes.md) rodando só no domínio, sem cena.
 
 Testes com dados da instalação são só locais: pulados quando a instalação não existe, nunca viram fixture versionada nem rodam na integração contínua (especificação §3.0, regra 6).
 
@@ -337,6 +341,7 @@ Testes com dados da instalação são só locais: pulados quando a instalação 
 - drag/drop e targeting;
 - render sorting e roof fade;
 - save/load end-to-end;
+- roteiros das estações do sandbox com apresentação;
 - input remapping.
 
 ### Gates

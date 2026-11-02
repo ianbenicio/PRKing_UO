@@ -105,6 +105,7 @@ O jogador cria um personagem, explora uma região, coleta recursos, aprende skil
 - `FR-801`: validadores de item, recipe, loot, skill e referências quebradas.
 - `FR-802`: visualizador de navmesh/grid, waypoints e agentes presos.
 - `FR-803`: simulador headless de economia e população.
+- `FR-804`: sandbox de testes: cena pequena com uma estação por sistema, que liga quando o sistema é implementado, e ferramentas de depuração só no build de desenvolvimento (`docs/architecture/sandbox-de-testes.md`).
 
 ## 7. Requisitos não funcionais
 
@@ -127,10 +128,11 @@ Loop básico (especificação §1), jogado num recorte do mapa: uma cidade e arr
 - criação de personagem (D6), stats e skills com ganho por uso, caps e travas (D5); skills mínimas da especificação §5.1;
 - combate corpo a corpo contra criaturas com IA simples (corpo a corpo e animal), armadura e parry (D4); arco PODE;
 - loot (D10), corpos e itens no chão (D11);
-- morte, fantasma e ressurreição, com curandeiro na cidade e santuário no campo;
+- regeneração de vida e estamina (especificação §4.3);
+- morte, fantasma e ressurreição, com curandeiro na cidade e santuário no campo; bandagens (especificação §8.1);
 - uma cidade com vendedor, banqueiro, curandeiro e guarda; notoriedade básica contra NPCs;
 - dia e noite (D9);
-- save/load, UI escalável e ferramentas mínimas de conteúdo.
+- save/load, UI escalável e ferramentas mínimas de conteúdo, entre elas o sandbox de testes (FR-804).
 
 Esse recorte prova o loop antes de multiplicar mapas, skills e itens.
 
