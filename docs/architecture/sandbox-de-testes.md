@@ -2,14 +2,14 @@
 
 Status: proposta (decisão do responsável em 2026-11-02)  
 Fonte das regras: [especificação](../spec/especificacao.md)  
-Primeira entrega: [Story 1.1](../stories/1.1-unity-foundation-and-local-vertical-slice.md)
+Primeiras entregas: [Story 1.1a](../stories/1.1a-unity-foundation-and-sandbox.md) e [Story 1.1b](../stories/1.1b-combat-ai-loot-vendor-and-save.md)
 
 ## 1. Objetivo
 
 Ter uma cena pequena com tudo o que é preciso para testar ações, skills, combate, IA, itens, economia, animações e, mais tarde, magia e crafting, sem andar pelo mundo atrás de cada caso. Decisões do responsável (2026-11-02):
 
 - **O sandbox cresce com o jogo.** Cada sistema ganha uma estação, que liga quando o sistema é implementado. O escopo da primeira versão (especificação §1) não muda: magia, coleta e crafting entram na segunda versão, com suas estações.
-- **O sandbox é a cena da Story 1.1.** A região autoral de 64 × 64 tiles do critério 4 é o sandbox.
+- **O sandbox é a cena da Story 1.1.** A região autoral de 64 × 64 tiles do critério 4 é o sandbox. A Story 1.1 foi dividida depois em 1.1a (cena, estações de movimento e desenho, painel de depuração) e 1.1b (demais estações da Fase 1).
 
 ## 2. Princípios
 
@@ -40,13 +40,15 @@ Ter uma cena pequena com tudo o que é preciso para testar ações, skills, comb
  (0,63)                                              (63,63)
 ```
 
-- O hub fica no ponto (32, 32), onde os quatro chunks se encontram: todo teste começa ali e já exercita o caso de borda "carregamento na borda entre quatro chunks" da Story 1.1.
+- O hub fica no ponto (32, 32), onde os quatro chunks se encontram: todo teste começa ali e já exercita o caso de borda "carregamento na borda entre quatro chunks" da Story 1.1a.
 - Cada quadrante é um chunk; a separação também mostra se o streaming e a ativação da IA por setores de 16 × 16 (especificação §2) se comportam ao cruzar fronteiras.
 - O hub tem um quadro com as estações, o estado de cada uma (ativa ou "em breve") e o atalho de teleporte para cada uma (comando de depuração).
 
 ## 4. Estações por fase
 
-### Fase 1 (Story 1.1)
+### Fase 1 (Stories 1.1a e 1.1b)
+
+A 1.1a ativa `st.mov.passos`, `st.mov.colisao`, `st.ren.desenho` e `st.ani.galeria`; a 1.1b ativa as demais.
 
 | ID | Estação | O que testa | Especificação |
 |---|---|---|---|

@@ -15,7 +15,7 @@ O nome do produto é **Outrora** (adotado pelo responsável em 2026-11-01). Nunc
 
 - Pesquisa inicial de fontes oficiais, comunidades e projetos open source concluída (contexto; as regras vêm da especificação).
 - Arquitetura offline e estratégia de dados definidas.
-- PRD, roadmap e primeira story preparados e alinhados à especificação em 2026-11-02 (Anexo A da especificação).
+- PRD, roadmap e primeiras stories (1.1a e 1.1b) preparados e alinhados à especificação em 2026-11-02 (Anexo A da especificação).
 - Implementação Unity ainda não iniciada; o Unity Editor não está instalado nesta máquina.
 
 ## Decisões iniciais
@@ -42,7 +42,8 @@ Mundo isométrico navegável; stats e skills com ganho; combate corpo a corpo co
 - [Arquitetura Unity offline](docs/architecture/unity-offline-architecture.md)
 - [Sandbox de testes](docs/architecture/sandbox-de-testes.md)
 - [Roadmap](docs/roadmap.md)
-- [Story 1.1 — fundação e vertical slice](docs/stories/1.1-unity-foundation-and-local-vertical-slice.md)
+- [Story 1.1a — fundação Unity e sandbox de testes](docs/stories/1.1a-unity-foundation-and-sandbox.md)
+- [Story 1.1b — combate, IA, loot, vendedor e save completo](docs/stories/1.1b-combat-ai-loot-vendor-and-save.md)
 
 ## Licença
 
@@ -52,4 +53,4 @@ A pasta e o repositório `PRKing_UO` serão renomeados para um nome neutro antes
 
 ## Próximo passo operacional
 
-Instalar o Unity 6.6 (6000.6.7f1), validar a Story 1.1 revisada e construir um vertical slice pequeno na cena sandbox: mapa isométrico em chunks, personagem, combate corpo a corpo contra uma criatura, loot, um vendedor e save/load local.
+Instalar o Unity 6.6 (6000.6.7f1), implementar a Story 1.1a (projeto, cena sandbox em chunks, movimento, save básico e painel de depuração) e depois a Story 1.1b (combate corpo a corpo contra uma criatura, loot, um vendedor e save/load completo).
