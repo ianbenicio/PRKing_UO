@@ -2,6 +2,8 @@
 
 Data da varredura inicial: 27 de outubro de 2026.
 
+> **Nota (2026-11-02).** Este dossiê é a pesquisa inicial do projeto e fica como contexto. Regras, fórmulas, formatos de arquivo e escopo vêm só da [especificação](../spec/especificacao.md); onde este dossiê diverge dela, vale a especificação. As divergências estão no Anexo A da especificação, e os pontos corrigidos aqui citam a seção correspondente.
+
 ## 1. Objetivo e critério de pesquisa
 
 Este documento identifica o DNA sistêmico de *Ultima Online* (UO), as diferenças entre eras, os dados úteis para implementação e as adaptações necessárias para transformar um mundo originalmente massivo em um RPG local. As fontes foram ordenadas assim:
@@ -42,7 +44,7 @@ UO acumulou sistemas incompatíveis entre si. O perfil de regras deve ser uma co
 |---|---:|---|---|
 | Original | 1997 | mundo único, sistemas iniciais, PvP aberto | fonte do sandbox, mas com muitas regras historicamente instáveis |
 | The Second Age (T2A) | 1998 | Lost Lands, dungeons, stat cap 225 | melhor baseline clássico e já usado por experiências offline |
-| Renaissance (UOR) | 2000 | divisão Felucca/Trammel, power hour | reduz griefing e consolida o conjunto clássico |
+| Renaissance (UOR) | 2000 | divisão Felucca/Trammel (o bônus da primeira hora do dia é anterior, de março de 2000, ainda no T2A; especificação §1.1) | reduz griefing; fora do perfil do projeto |
 | Third Dawn | 2001 | Ilshenar e cliente 3D | expansão de mundo e criaturas |
 | Lord Blackthorn's Revenge | 2002 | pet bonding e quests | domesticação menos punitiva |
 | Age of Shadows | 2003 | propriedades em itens, Malas, Chivalry e Necromancy | muda profundamente loot, builds e balanceamento |
@@ -57,7 +59,7 @@ A matriz acima é corroborada pela documentação de [eras do ModernUO](https://
 
 ### Recomendação
 
-- `Classic`: T2A como núcleo, com correções de usabilidade inspiradas em UOR.
+- `Classic`: T2A no estado de março de 2000 (decisão D1); Renaissance, Trammel e Age of Shadows ficam fora (especificação §1). Os números ficam em dados, com os perfis "T2A estrito" e "pré-AOS final".
 - `Modern`: reservado para uma fase futura, começando em AoS.
 - `Custom`: regras originais do projeto, sem obrigação de compatibilidade.
 
@@ -98,6 +100,8 @@ Referências especializadas por sistema incluem a [categoria Combat oficial](htt
 
 A [enciclopédia UOGuide](https://www.uoguide.com/Skills) registra 58 skills ativas e uma removida. O projeto deve importar skills como definições de dados, não criar uma classe C# por skill.
 
+Para o perfil T2A valem as 49 skills do fim da era (46 no lançamento), listadas na especificação §5.1; a lista abaixo é o catálogo moderno, só como contexto.
+
 ### Combate
 
 Archery, Chivalry, Fencing, Focus, Mace Fighting, Parrying, Swordsmanship, Tactics, Wrestling, Bushido e Throwing.
@@ -137,6 +141,7 @@ O perfil T2A habilitará apenas o subconjunto historicamente apropriado. Skills 
 | Dado | Valor documentado | Uso no projeto |
 |---|---:|---|
 | Skills ativas no UO moderno | 58 | catálogo máximo, não escopo inicial |
+| Skills no fim do T2A | 49 (46 no lançamento) | perfil T2A (especificação §5.1) |
 | Skill cap moderno | 720.0 | somente profile moderno |
 | Skill cap clássico T2A | 700.0 | default proposto para `Classic` |
 | Cap individual clássico | 100.0 | Grandmaster; profile moderno pode chegar a 120 com scrolls |
@@ -163,6 +168,8 @@ Dimensões de referência:
 | Ter Mur | 1280 × 4096 |
 
 Essas dimensões são confirmadas pelo [UO Asset Studio](https://www.uoassets.com/studio/guide/UOAssetStudio-User-Guide-0.33.13) e podem ser comparadas aos [facet maps oficiais](https://uo.com/wiki/ultima-online-wiki/world/facet-maps/).
+
+Para o T2A vale só o mapa 0, recortado a 6144 × 4096; a largura de 7168 é de 2005 em diante. A primeira versão joga num recorte dele: uma cidade e arredores (especificação §10.1 e D8). Os formatos de arquivo que o projeto lê estão na especificação §3, não nas ferramentas citadas acima.
 
 ### Conclusão técnica
 
@@ -193,25 +200,37 @@ O [README do UO Offline](https://github.com/Klein187/uo-offline) detalha behavio
 
 | Projeto | Valor para pesquisa | Licença/limite |
 |---|---|---|
-| [ClassicUO](https://github.com/ClassicUO/ClassicUO) | rendering, formatos, interação e cliente clássico | BSD-2-Clause; não distribui assets da EA |
+| [ClassicUO](https://github.com/ClassicUO/ClassicUO) | rendering, formatos, interação e cliente clássico | arquivo LICENSE BSD-2-Clause; o README diz "BSD 4"; não distribui assets da EA |
 | [ModernUO](https://github.com/modernuo/ModernUO) | eras, entidades, conteúdo, regras e persistência | GPL-3.0; não copiar para um projeto incompatível |
-| [RunUO](https://www.runuo.net/) | origem do ecossistema C# de emulação | verificar licença por componente |
-| [UOFiddler](https://github.com/polserver/UOFiddler) | inspeção e conversão de dados 2D | Beerware; assets continuam protegidos |
-| [UO Offline](https://github.com/Klein187/uo-offline) | desenho de população simulada local | derivado de ModernUO/ClassicUO; confirmar licença antes de reutilizar |
+| [RunUO](https://www.runuo.net/) | origem do ecossistema C# de emulação | GPL-2.0 (especificação §17) |
+| [UOFiddler](https://github.com/polserver/UOFiddler) | inspeção e conversão de dados 2D | "Beerware" só no README; assets continuam protegidos |
+| [UO Offline](https://github.com/Klein187/uo-offline) | desenho de população simulada local | descrito como derivado de ModernUO/ClassicUO; se deriva do ModernUO, herda a GPL-3.0 (inferência da especificação) |
 | [sosaria-forge](https://github.com/xor-droid/sosaria-forge) | formatos de mapa e geração procedural | consultar licença do repositório |
+| MobileUO | cliente em Unity baseado no ClassicUO | GPLv3 no README |
+| POL | emulador | termo de uso próprio condiciona até a leitura do código: não usar como fonte |
+| xrip/uo-client | cliente | diz derivar de descompilação do cliente oficial: excluído da sala limpa |
 
-O documento de [content patterns do ModernUO](https://github.com/modernuo/ModernUO/blob/main/dev-docs/content-patterns.md) é útil como taxonomia de itens, criaturas, spells, skills, loot e lifecycle, mas seu código não deve entrar no projeto sem uma decisão consciente de licenciamento.
+Sala limpa (desde 2026-11-02): este quadro registra a pesquisa inicial. O projeto não abre o código desses repositórios ao escrever o seu; comportamento, regras e formatos vêm só da especificação (§17 dela traz as licenças).
+
+O documento de [content patterns do ModernUO](https://github.com/modernuo/ModernUO/blob/main/dev-docs/content-patterns.md) foi citado na pesquisa inicial como taxonomia de itens, criaturas, spells, skills, loot e lifecycle. Pela sala limpa, ele não é fonte do projeto: a taxonomia sai da especificação e do próprio desenho do projeto.
 
 ## 10. Limite jurídico e de propriedade intelectual
 
 A [EA User Agreement](https://www.ea.com/legal/user-agreement) afirma que o conteúdo e os direitos associados permanecem com a EA/licenciadores e restringe cópia, modificação, distribuição e extração salvo autorização ou lei aplicável. A [política de conteúdo da EA](https://help.ea.com/en/articles/security-and-rules/ea-content-policy/) não oferece uma autorização geral para mods de UO. Portanto:
 
 - não versionar nem distribuir `.mul`, `.idx`, `.uop`, mapas, sprites, animações, gumps, fontes, música, sons, textos ou logos de UO;
-- não usar `Ultima`, `Ultima Online`, Britannia ou personagens como marca do produto distribuído;
+- o nome do produto é Outrora; nunca usar `Ultima`, `Ultima Online`, Britannia ou personagens como nome ou marca do produto, do repositório ou de divulgação;
 - não conectar um cliente customizado aos servidores oficiais;
 - manter código clean-room e conteúdo autoral como caminho padrão;
-- se houver um modo de compatibilidade pessoal, o usuário deve apontar para a própria instalação legítima e o importador deve produzir cache local não redistribuível;
-- realizar revisão jurídica antes de qualquer distribuição pública ou monetização.
+- não há importador nem cache: o leitor opcional lê a instalação legítima do próprio jogador só em tempo de execução, desligado por padrão e só para uso pessoal (decisões de 2026-10-28 e 2026-11-01, especificação §3.0 e §17);
+- nenhum build é distribuído por ora; nenhuma monetização, nem doação ligada ao jogo; nenhum porte para outras plataformas sem nova avaliação.
+
+A especificação §17 acrescenta pontos que esta varredura não tinha (não é parecer jurídico):
+
+- cópias de fórum dos termos do UO proíbem emuladores e ferramentas "derivadas de ou criadas para" o jogo sem autorização escrita da EA; o texto oficial atual não foi lido;
+- precedente FreeSO (2017): um motor que lia os arquivos do usuário, sem distribuir assets, recebeu pedido da EA centrado em marca, doações e porte para outras plataformas;
+- a EA fez novos depósitos da marca "Ultima" em junho de 2026; "Britannia" é tratado como protegido;
+- Richard Garriott notificou a EA para recuperar direitos do Ultima a partir de 2027, com escopo em negociação.
 
 O próprio [ClassicUO](https://github.com/ClassicUO/ClassicUO) segue o padrão de distribuir código, não assets, e exige uma instalação legítima dos dados.
 
@@ -221,5 +240,5 @@ O escopo correto não é “copiar um MMO sem servidor”. É construir um RPG s
 
 `explorar → coletar → fabricar/saquear → negociar/equipar → assumir riscos → afetar o mundo → persistir consequências`.
 
-O perfil clássico oferece uma fundação limitada e coerente. A arquitetura deve ser data-driven, autoritativa localmente, testável fora do Unity e capaz de simular uma população em diferentes níveis de detalhe. O primeiro marco não deve tentar reproduzir Britannia inteira; deve provar esse ciclo em uma pequena região densa.
+O perfil clássico oferece uma fundação limitada e coerente. A arquitetura deve ser data-driven, autoritativa localmente, testável fora do Unity e capaz de simular uma população em diferentes níveis de detalhe. O primeiro marco não deve tentar reproduzir o mundo inteiro; deve provar o loop básico da especificação §1 numa cidade e arredores.
 

@@ -1,7 +1,8 @@
 # Arquitetura — Unity offline, processo único
 
 Status: proposta inicial  
-Target: Unity 6.6 (6000.6.7f1), Windows x64 primeiro
+Target: Unity 6.6 (6000.6.7f1), Windows x64 primeiro  
+Fonte das regras: [especificação](../spec/especificacao.md) (sala limpa; alinhamento de 2026-11-02 no Anexo A dela)
 
 ## 1. Decisões executivas
 
@@ -14,6 +15,8 @@ Target: Unity 6.6 (6000.6.7f1), Windows x64 primeiro
 7. Mundo, render e agentes usam LOD. Nenhum facet grande vira milhões de GameObjects.
 8. Multiplayer futuro só poderá entrar por uma nova implementação de autoridade; não será antecipado com dependências de netcode.
 9. DOTS/Entities não é obrigatório no início. Só será adotado após profiling demonstrar um gargalo que o modelo híbrido não resolve.
+10. Todo conteúdo passa por um provedor de recursos com duas implementações: conteúdo próprio (padrão) e leitor da instalação do jogador (opcional, desligado por padrão, só em tempo de execução e só para uso pessoal). Não há importador nem cache em disco; nada lido da instalação vai para `Assets/`, git, build, save ou capturas versionadas (especificação §3.0 e §17).
+11. Uma origem por mundo: a configuração escolhe "próprio" ou "instalação" para mapa e arte; o recurso que faltar na instalação cai no conteúdo próprio (especificação §3.0, regra 2).
 
 A versão é o Unity 6.6 (6000.6.7f1), decisão do responsável em 2026-10-28. A 6.6 é "supported release", não LTS: recebe correções até sair a 6.7 LTS, prevista para o quarto trimestre de 2026 ([anúncio da Unity](https://discussions.unity.com/t/unity-6-6-is-now-available/1735357)); a migração para a 6.7 LTS entra no roadmap. O [ScriptableObject](https://docs.unity3d.com/6000.1/Documentation/Manual/class-ScriptableObject.html) é apropriado para dados compartilhados de autoria, mas a própria documentação ressalta que ele não deve ser usado para salvar alterações em um build publicado.
 
@@ -76,7 +79,7 @@ C# sem dependência de Unity:
 - content catalog loader;
 - chunk database;
 - logs e diagnostics;
-- importadores opcionais isolados.
+- provedor de recursos: origem própria e leitor opcional da instalação (só em tempo de execução, sem conversão nem cache em disco).
 
 ### Presentation.Unity
 
@@ -98,15 +101,14 @@ C# sem dependência de Unity:
 ```text
 PRKing_UO/
 ├── docs/
-├── tools/
-│   └── importers/                  # ferramentas externas opcionais
+├── tools/                          # sem importadores: a instalação só é lida em tempo de execução
 └── Unity/
     ├── Assets/
     │   └── _Project/
     │       ├── Art/
     │       ├── Audio/
     │       ├── Content/
-    │       │   ├── Classic/
+    │       │   ├── Classic/            # regras e conteúdo próprios do perfil T2A; nada da instalação
     │       │   ├── Custom/
     │       │   └── Shared/
     │       ├── Scenes/
@@ -173,6 +175,8 @@ RuleProfileDefinition
 
 Campos comuns: `id`, `schemaVersion`, `displayNameKey`, `introducedInEra`, `tags`, `enabledProfiles` e referências por `ContentId`.
 
+`ContentId` é próprio e neutro. Uma tabela de correspondência liga cada ID ao asset próprio e, quando existir, ao gráfico da instalação; regras, dados e save usam só IDs próprios, e trocar a origem não quebra o save (especificação §3.0, regra 1). `RuleProfileDefinition` guarda os números das regras como dados, com os perfis "T2A estrito" e "pré-AOS final" e o ponto de referência de março de 2000 (D1).
+
 ### Estado mutável
 
 ```text
@@ -197,11 +201,13 @@ Definição e instância nunca se confundem. Uma espada pode referenciar `item.s
 - `WorldTile(x, y, z, worldId)` é a coordenada autoritativa.
 - Presentation converte tile para posição isométrica.
 - Altura usa inteiro discreto; floats ficam restritos à interpolação visual.
+- Projeção e medidas comuns às duas origens: losango de 44 × 44 pixels e 4 pixels por unidade de altura (especificação §3.0 e §3.9).
 
 ### Chunks
 
-- tamanho inicial: 32×32 tiles, ajustável após profiling;
-- arquivos independentes para terrain, statics, navigation e metadata;
+- tamanho inicial: 32×32 tiles, ajustável após profiling, sempre múltiplo de 8. Com a origem "instalação", cada chunk junta 4 × 4 blocos nativos de 8 × 8, lidos na ordem de coluna, com células em ordem de linha (especificação §3.5);
+- a ativação da IA usa setores de 16 × 16 tiles por proximidade do jogador, independentes do tamanho do chunk (especificação §2 e §13.1);
+- arquivos independentes para terrain, statics, navigation e metadata (origem própria; com a origem "instalação", os chunks são montados em memória a partir dos arquivos dela, sem gravar nada em disco);
 - working set com anéis: visible, simulated-near, simulated-far e dormant;
 - cache LRU com prefetch na direção do movimento;
 - carregamento assíncrono e commit no início de tick.
@@ -209,14 +215,15 @@ Definição e instância nunca se confundem. Uma espada pode referenciar `item.s
 ### Render
 
 - terreno e statics batchados por atlas/material;
-- sorting por chave `(screenY, z, layer, stableId)`;
+- ordem de desenho da especificação §3.9: entre células, diagonais de x + y crescente; dentro da célula, prioridade por altura e tipo (terreno, objeto de fundo, objeto, personagem, efeito); `stableId` só desempata. Uma chave por `screenY` mistura altura e erra objetos altos;
 - pooling para mobiles, doors, effects e labels;
-- occlusion/fade para telhados e paredes;
+- occlusion/fade para telhados e paredes, com o teto calculado a partir da célula do jogador (especificação §3.9);
 - no máximo um número limitado de renderers por chunk, nunca por tile.
 
 ## 9. Simulação e tempo
 
-- tick autoritativo inicial: 10 Hz;
+- tick autoritativo inicial: 10 Hz. **Decisão pendente (especificação, Anexo A, A18):** 10 Hz representa os passos de 400, 200 e 100 ms, mas não os ritmos de IA de 0,175 s e 0,25 s nem intervalos de golpe contínuos sem arredondar;
+- timers guardados como tempo restante, para que salvar e carregar preserve o estado (especificação §2.1);
 - apresentação interpolada até o frame rate;
 - ações usam tempo de simulação, não `Time.deltaTime` diretamente;
 - relógio de mundo desacoplado do wall clock;
@@ -226,6 +233,8 @@ Definição e instância nunca se confundem. Uma espada pode referenciar `item.s
 Cada tick processa uma fila limitada. Sistemas pesados — path requests, economia global, planejamento distante — são distribuídos em slots para evitar spikes.
 
 ## 10. AI e população
+
+Na primeira versão, as criaturas usam os arquétipos corpo a corpo e animal da especificação §13.1 (percepção, fuga, território e ritmo em dados). O modelo híbrido abaixo é para a Fase 5.
 
 ### Modelo híbrido
 
@@ -255,6 +264,8 @@ Agentes distantes não percorrem cada tile. Eles avançam por arestas de grafo c
 - recuperação escalonada: abrir porta → sidestep → repath → nearest safe node.
 
 ## 11. Economia
+
+Na primeira versão, o vendedor usa o modelo de tabela da especificação §11.3: preço-base com a taxa da cidade, preço pago ao jogador por tipo e qualidade, revenda e reposição por hora de jogo. O modelo abaixo entra na Fase 4 como perfil próprio, sem trocar as regras do perfil T2A.
 
 Modelo de ledger fechado por transação:
 
@@ -288,7 +299,8 @@ Regras:
 - migrations forward-only testadas com fixtures antigas;
 - autosave por tempo e em transições seguras;
 - save manual nunca sobrescreve o único backup válido;
-- carregar falha com mensagem e opção de backup, não com mundo parcial.
+- carregar falha com mensagem e opção de backup, não com mundo parcial;
+- o save guarda o estado autoritativo (entidades, timers com tempo restante, relógio do mundo, semente do sorteio) e só IDs próprios; nada lido da instalação vai para o save, inclusive `screenshot.png`, que só é gravado com a origem "próprio" (especificação §3.0 e §15).
 
 ## 13. UI
 
@@ -315,6 +327,8 @@ Regras:
 - serialization, checksum e migrations;
 - determinismo com seed.
 
+Testes com dados da instalação são só locais: pulados quando a instalação não existe, nunca viram fixture versionada nem rodam na integração contínua (especificação §3.0, regra 6).
+
 ### PlayMode
 
 - bootstrap e troca de scenes;
@@ -336,9 +350,11 @@ Regras:
 
 - `Assets/_Project` aceita apenas conteúdo próprio ou com licença registrada.
 - cada pack possui `THIRD_PARTY_NOTICES.md` quando necessário.
-- importadores de dados externos ficam fora do runtime e do conteúdo versionado.
-- o build público não usa nomes, mapas, arte, áudio ou texto protegidos de UO.
-- código GPL não será copiado para assemblies proprietários; qualquer mudança dessa política exige ADR e decisão de licença do produto.
+- não há importador: o leitor da instalação roda só em tempo de execução, desligado por padrão e só para uso pessoal; nada lido dela entra em `Assets/`, git, build, save ou capturas versionadas.
+- nenhum build contém nomes, mapas, arte, áudio ou texto da EA; nenhum build é distribuído por ora, e um build compartilhado no futuro usa só conteúdo próprio (especificação §17).
+- o produto se chama Outrora; nenhuma marca da EA no produto, no repositório ou em divulgação.
+- sala limpa: o código de clientes e emuladores de código aberto (ClassicUO, RunUO, ModernUO, ServUO, MobileUO, UO Offline e outros) não é aberto ao escrever o código do projeto, e nada dele é copiado; a única fonte de regras e formatos é a especificação.
+- o `.gitignore` bloqueia os formatos de dados do jogo de referência.
 
 ## 16. Seam para multiplayer futuro
 

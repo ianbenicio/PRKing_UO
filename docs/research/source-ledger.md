@@ -13,6 +13,8 @@ Cada dado importado para o projeto deverá registrar:
 
 Uma fonte descrevendo o UO moderno não pode ser usada silenciosamente para uma regra T2A. Um relato de fórum pode gerar hipótese e teste, mas não se torna fórmula apenas por ser popular.
 
+**Sala limpa (desde 2026-11-02).** Sobre o jogo de referência, regras, fórmulas, formatos de arquivo e escopo vêm só da [especificação](../spec/especificacao.md). As fontes abaixo ficam como registro da pesquisa inicial: nenhuma regra nova sai delas diretamente, e o código dos repositórios listados não é aberto ao escrever o projeto. Pergunta que a especificação não responde segue a pergunta de volta descrita em [docs/spec/README.md](../spec/README.md). A documentação da Unity continua fonte normal para a engine.
+
 ## Fontes de primeira linha
 
 | Fonte | Tipo | Uso autorizado no projeto | Atenção |
@@ -41,30 +43,35 @@ Uma fonte descrevendo o UO moderno não pode ser usada silenciosamente para uma 
 
 ## Implementações open source
 
-| Repositório | Extração permitida nesta fase | Restrição |
+Pela sala limpa, nenhum código desses repositórios é aberto ao escrever o projeto nem copiado; formatos e regras vêm da especificação (§3 e §4–§13). A coluna do meio registra o que a pesquisa inicial usou, não um uso permitido daqui em diante.
+
+| Repositório | Uso na pesquisa inicial | Restrição |
 |---|---|---|
-| [ClassicUO](https://github.com/ClassicUO/ClassicUO) | estudar arquitetura e formatos; reutilização apenas com atribuição/licença | BSD-2-Clause não concede assets da EA |
-| [ModernUO](https://github.com/modernuo/ModernUO) | comparar comportamento e eras | GPL-3.0 exige decisão de licenciamento antes de código derivado |
-| [UOFiddler](https://github.com/polserver/UOFiddler) | avaliar pipeline de importação local | Beerware; dados lidos continuam protegidos |
-| [Ultima SDK Python](https://github.com/UltimaWorks/ultima-sdk-python) | referência para `.mul/.idx/.uop` | verificar licença do pacote antes de integrar |
-| [UO Offline](https://github.com/Klein187/uo-offline) | requisitos de AI, economia, navegação e UX offline | não copiar implementação sem auditoria de licença |
+| [ClassicUO](https://github.com/ClassicUO/ClassicUO) | arquitetura e formatos | arquivo LICENSE BSD-2-Clause; o README diz "BSD 4"; não concede assets da EA |
+| [ModernUO](https://github.com/modernuo/ModernUO) | comparar comportamento e eras | GPL-3.0 |
+| [UOFiddler](https://github.com/polserver/UOFiddler) | catálogo de arquivos do cliente | "Beerware" só no README; dados lidos continuam protegidos |
+| [Ultima SDK Python](https://github.com/UltimaWorks/ultima-sdk-python) | referência citada para `.mul/.idx/.uop` | licença não verificada; a especificação §17 cita um "Ultima SDK" com "Beerware" só no README, sem dizer se é este pacote |
+| [UO Offline](https://github.com/Klein187/uo-offline) | requisitos de AI, economia, navegação e UX offline | se deriva do ModernUO, herda a GPL-3.0 (inferência da especificação); só referência de comportamento |
+| MobileUO | cliente em Unity baseado no ClassicUO | GPLv3 no README |
+| POL | emulador | termo de uso próprio condiciona até a leitura do código: não usar |
+| xrip/uo-client | cliente | diz derivar de descompilação do cliente oficial: excluído da sala limpa |
 
 ## Perguntas de pesquisa abertas
 
-- Qual subconjunto exato de skills e fórmulas define o perfil `Classic`?
-- O produto final será somente inspirado em UO ou terá um importador pessoal de dados legítimos?
-- Qual tamanho de região mantém exploração interessante para um único jogador?
+- Qual subconjunto exato de skills e fórmulas define o perfil `Classic`? **Resolvida (2026-11-02):** especificação §4–§13, com as 49 skills da §5.1 e as decisões D1–D11.
+- O produto final será somente inspirado em UO ou terá um importador pessoal de dados legítimos? **Resolvida:** modelo misto, sem importador; leitor opcional em tempo de execução, só para uso pessoal (especificação §3.0 e §17).
+- Qual tamanho de região mantém exploração interessante para um único jogador? Para a primeira versão: uma cidade e arredores com uma área de criaturas (D8); o tamanho exato do recorte segue aberto.
 - Quantos agentes próximos e distantes formam um mundo vivo no hardware mínimo?
 - Qual é a melhor representação visual: pixel art autoral 2D, 2.5D ou low-poly isométrico?
 - O combate permanece em tempo real contínuo ou ganha pausa tática opcional?
-- Qual intensidade de morte, perda de itens e PK simulado é desejável?
+- Qual intensidade de morte, perda de itens e PK simulado é desejável? **Resolvida para a primeira versão:** o padrão são as regras da especificação §8.3 e §9; intensidade configurável fica para depois.
 
 ## Processo de atualização
 
 1. Registrar a questão e a era.
-2. Procurar fonte oficial ou documentação histórica.
-3. Comparar pelo menos uma implementação e uma fonte comunitária quando houver ambiguidade.
-4. Escrever uma especificação própria, sem copiar texto ou código.
+2. Procurar a resposta na especificação (`docs/spec/especificacao.md`).
+3. Se ela não responder, registrar a pergunta de volta em `docs/spec/README.md` e, enquanto espera, decidir por conta própria documentando a decisão, ou deixar o ponto parado. Nunca ir ao jogo, à evidência ou ao código de terceiros para responder.
+4. Quando o adendo chegar, atualizar a cópia da especificação (novo hash) e o registro de entrega.
 5. Criar teste de aceitação ou simulação de balanceamento.
 6. Salvar a decisão no PRD/ADR correspondente.
 

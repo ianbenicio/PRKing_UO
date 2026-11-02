@@ -1,17 +1,18 @@
-# PRD — RPG sandbox isométrico local inspirado em Ultima Online
+# PRD — Outrora, RPG sandbox isométrico local
 
 Status: Draft inicial  
-Data: 27 de outubro de 2026
+Data: 27 de outubro de 2026  
+Revisão: 2 de novembro de 2026 — alinhamento com a [especificação](../spec/especificacao.md) (Anexo A dela)
 
 ## 1. Visão
 
-Criar um RPG sandbox isométrico para um jogador, executado inteiramente de forma local, que preserve a liberdade sistêmica de *Ultima Online*: progressão por uso, mundo persistente, crafting relevante, objetos físicos, economia e uma sociedade simulada por agentes.
+Criar um RPG sandbox isométrico para um jogador, executado inteiramente de forma local, que preserve a liberdade sistêmica do MMO clássico de referência na era T2A: progressão por uso, mundo persistente, crafting relevante, objetos físicos, economia e uma sociedade simulada por agentes.
 
-O produto não será um servidor privado empacotado nem um cliente que exige localhost. Será um jogo Unity de processo único, com conteúdo original por padrão e uma arquitetura capaz de receber novos perfis de regras e conteúdo.
+O produto não será um servidor privado empacotado nem um cliente que exige localhost. Será um jogo Unity de processo único, chamado **Outrora**, com conteúdo próprio por padrão, leitura opcional da instalação do próprio jogador (só em tempo de execução e só para uso pessoal) e uma arquitetura capaz de receber novos perfis de regras e conteúdo. As regras vêm só da especificação de sala limpa.
 
 ## 2. Problema
 
-UO foi desenhado para que outros jogadores preenchessem funções sociais e econômicas. Simplesmente remover a rede produz cidades vazias, vendors irrelevantes, crafting sem demanda e pouca narrativa emergente. A experiência local precisa substituir parte dessa dinâmica com agentes, facções, rotinas e uma economia persistente, sem fingir que NPCs são jogadores humanos.
+O jogo de referência foi desenhado para que outros jogadores preenchessem funções sociais e econômicas. Simplesmente remover a rede produz cidades vazias, vendors irrelevantes, crafting sem demanda e pouca narrativa emergente. A experiência local precisa substituir parte dessa dinâmica com agentes, facções, rotinas e uma economia persistente, sem fingir que NPCs são jogadores humanos.
 
 ## 3. Pilares
 
@@ -19,18 +20,18 @@ UO foi desenhado para que outros jogadores preenchessem funções sociais e econ
 2. Tudo é um sistema: combate, coleta, crafting, comércio e reputação se alimentam.
 3. Mundo vivo offline: agentes viajam, trabalham, consomem, lutam e contam eventos.
 4. Consequências persistentes: recursos, estoques, crimes, casas e relações sobrevivem ao reload.
-5. Conteúdo autoral e seguro: a distribuição não depende de propriedade intelectual da EA.
+5. Conteúdo autoral e seguro: o jogo roda só com conteúdo próprio; nada da EA entra no git, no build ou no save.
 6. Ferramentas antes de volume: designers criam regiões, spawns, receitas e agendas sem editar código.
 
 ## 4. Público inicial
 
-- fãs de UO clássico que desejam uma experiência local e preservável;
+- fãs do MMO clássico de referência que desejam uma experiência local e preservável;
 - jogadores de RPG sandbox que valorizam crafting, builds livres e exploração;
 - modders e designers que querem criar mundos e regras sem manter servidor.
 
 ## 5. Experiência-alvo
 
-O jogador cria um personagem, explora uma região, coleta recursos, aprende skills pelo uso, fabrica ou saqueia equipamentos, negocia com uma economia local, forma relações com NPCs, enfrenta perigos, adquire uma casa e altera de modo persistente o estado do mundo.
+O jogador cria um personagem, explora uma região, coleta recursos, aprende skills pelo uso, fabrica ou saqueia equipamentos, negocia com uma economia local, forma relações com NPCs, enfrenta perigos, adquire uma casa e altera de modo persistente o estado do mundo. A primeira versão jogável cobre só o loop básico (§8).
 
 ## 6. Requisitos funcionais
 
@@ -38,8 +39,9 @@ O jogador cria um personagem, explora uma região, coleta recursos, aprende skil
 
 - `FR-001`: iniciar, pausar, salvar, carregar e sair sem serviço externo.
 - `FR-002`: utilizar seed e RNG controlado para testes reprodutíveis.
-- `FR-003`: suportar profiles de regras com conteúdo habilitado por era.
+- `FR-003`: suportar profiles de regras com conteúdo habilitado por era; números em tabelas de dados, com os perfis "T2A estrito" e "pré-AOS final" (especificação, "Modelo numérico").
 - `FR-004`: manter IDs estáveis para entidades persistentes.
+- `FR-005`: ler todo conteúdo por um provedor de recursos com duas origens — próprio (padrão) e instalação do jogador (opcional, só em tempo de execução, desligado por padrão) — e usar só IDs próprios em regras, dados e save (especificação §3.0 e §15).
 
 ### Mundo
 
@@ -113,62 +115,87 @@ O jogador cria um personagem, explora uma região, coleta recursos, aprende skil
 - `NFR-005`: conteúdo inválido deve falhar no Editor/CI, não silenciosamente no runtime.
 - `NFR-006`: o build padrão realiza zero chamadas de rede.
 - `NFR-007`: nenhuma dependência obrigatória de conta, launcher ou CDN.
-- `NFR-008`: nenhum asset ou texto protegido de UO entra no repositório.
+- `NFR-008`: nenhum asset, dado ou texto da EA entra no repositório, no build, no save ou em capturas versionadas.
+- `NFR-009`: nenhum build é distribuído por ora; um build compartilhado no futuro exige nova avaliação do responsável e usa só conteúdo próprio (especificação §17).
+- `NFR-010`: nenhuma monetização, nem doação ligada ao jogo; nenhum porte para outras plataformas sem nova avaliação (especificação §17).
 
 ## 8. Escopo do primeiro produto jogável
 
-Uma região autoral pequena contendo:
+Loop básico (especificação §1), jogado num recorte do mapa: uma cidade e arredores com uma área de criaturas (D8: recorte do mapa real lido da instalação, para uso pessoal; o conteúdo próprio é a base e cobre o que faltar com placeholders):
 
-- uma cidade, uma área selvagem e uma dungeon;
-- um personagem e cinco skills representativas;
-- melee, uma arma ranged e quatro spells;
-- vinte definições de itens e seis receitas;
-- mining e lumberjacking;
-- dois vendors, um healer, um guard e oito agentes simulados;
-- dez tipos de criaturas, pets básicos e loot;
-- uma casa simples;
-- uma quest curta e um evento emergente;
+- mundo isométrico navegável, com elevação e colisão (especificação §10.5);
+- criação de personagem (D6), stats e skills com ganho por uso, caps e travas (D5); skills mínimas da especificação §5.1;
+- combate corpo a corpo contra criaturas com IA simples (corpo a corpo e animal), armadura e parry (D4); arco PODE;
+- loot (D10), corpos e itens no chão (D11);
+- morte, fantasma e ressurreição, com curandeiro na cidade e santuário no campo;
+- uma cidade com vendedor, banqueiro, curandeiro e guarda; notoriedade básica contra NPCs;
+- dia e noite (D9);
 - save/load, UI escalável e ferramentas mínimas de conteúdo.
 
-Esse recorte prova o ciclo completo antes de multiplicar mapas, skills e itens.
+Esse recorte prova o loop antes de multiplicar mapas, skills e itens.
 
 ## 9. Fora do escopo inicial
 
+- magia (segunda versão; a D3 é decidida antes);
+- coleta e crafting (segunda versão);
+- housing e barcos, pets e domesticação, guildas, quests, viagem e agentes simulados do mundo vivo;
 - multiplayer, servidor dedicado, login, chat online ou serviços de conta;
-- compatibilidade de protocolo com servidores UO;
+- compatibilidade de protocolo com servidores do jogo de referência;
 - PvP entre humanos;
-- todas as facets, todas as eras ou 58 skills na primeira versão;
+- outras facets, outras eras e skills além das 49 do T2A;
 - LLM obrigatório para NPCs;
-- live service, loja, microtransações ou telemetry externa;
-- redistribuição de assets de UO.
+- qualquer monetização (live service, loja, microtransações, doação ligada ao jogo) ou telemetry externa;
+- distribuição de builds e porte para outras plataformas;
+- redistribuição de assets da EA.
 
 ## 10. Métricas de sucesso
 
-- um novo jogador completa o ciclo coleta → crafting → combate → comércio → save sem console;
-- dez ciclos de save/load preservam inventário, agentes, economia e mundo;
-- agentes mantêm atividade observável em cidade, estradas e dungeon sem intervenção;
-- economia simulada de 30 dias não entra em inflação/escassez irreversível;
+- um novo jogador completa o ciclo explorar → combater → saquear → morrer e ressuscitar → vender e guardar no banco → salvar sem console;
+- dez ciclos de save/load preservam inventário, skills, corpos, estoque e mundo;
+- a UI permanece utilizável em 1280×720, 1920×1080 e 4K com escalas configuráveis;
 - nenhuma referência quebrada ou dado inválido passa pelos validadores;
-- a UI permanece utilizável em 1280×720, 1920×1080 e 4K com escalas configuráveis.
+- a partir da Fase 4: economia simulada de 30 dias não entra em inflação/escassez irreversível;
+- a partir da Fase 5: agentes mantêm atividade observável em cidade, estradas e dungeon sem intervenção.
 
 ## 11. Riscos principais
 
 | Risco | Mitigação |
 |---|---|
 | escopo equivalente a décadas de MMO | vertical slice e expansão por profiles/packs |
-| mundo vazio sem jogadores | agentes locais e economia desde o primeiro slice |
+| mundo vazio sem jogadores | agentes locais e economia a partir das Fases 4 e 5; NPCs de cidade desde a primeira versão |
 | performance em mapas densos | chunks, pooling, LOD de simulação e profiling precoce |
 | navegação frágil | arrival points, validadores, telemetria de stuck e rotas hierárquicas |
 | save quebrado após mudanças | versionamento, migração, snapshot atômico e backups |
-| contaminação de IP/licença | conteúdo original, ledger de fontes e revisão jurídica |
-| fórmulas conflitantes por era | `RuleProfile` e testes de comportamento por perfil |
+| contaminação de IP/licença | sala limpa (só a especificação), conteúdo próprio, nome Outrora, nada da EA no git ou no build, ledger de fontes e revisão jurídica |
+| fórmulas conflitantes por era | `RuleProfile`, ponto de referência de março de 2000 (D1) e testes de comportamento por perfil |
 | tooling tardio | ferramentas são critério de aceite, não backlog opcional |
 
 ## 12. Decisões ainda pendentes
 
 - direção de arte autoral;
-- regras exatas do profile `Classic`;
-- possibilidade ou não de importador pessoal de dados legítimos;
-- intensidade padrão de morte, crime e PK simulado;
-- plataformas além de Windows no primeiro release.
+- licença do próprio Outrora;
+- tique autoritativo da simulação (especificação, Anexo A, A18);
+- nome da pasta do repositório e dos arquivos que citam o jogo de referência (Anexo A, A7);
+- destino da Story 1.2 (Anexo A, A2);
+- regras exatas do profile `Classic` — **resolvida (2026-11-02):** valem as seções 4 a 13 da especificação, no perfil T2A, com as decisões abaixo;
+- possibilidade ou não de importador pessoal de dados legítimos — **resolvida:** não há importador; há leitor opcional em tempo de execução, só para uso pessoal (decisões de 2026-10-28 e 2026-11-01, especificação §3.0 e §17);
+- intensidade padrão de morte, crime e PK simulado — **resolvida para a primeira versão:** o padrão são as regras da especificação (§8.3 e §9); intensidade configurável fica para depois;
+- plataformas além de Windows no primeiro release — **resolvida:** só Windows; nenhum porte sem nova avaliação (especificação §17).
 
+### Decisões D1–D11 (aceitas pelo responsável em 2026-11-01)
+
+Resumo; o texto que vale é o da especificação §16.
+
+| # | Tema | Decisão |
+|---|---|---|
+| D1 | Ponto de referência dentro do T2A | estado de março de 2000; números do emulador onde não houver número oficial |
+| D2 | Vida máxima | 50 + força/2 |
+| D3 | Resistência a magia | adiada: decidir antes da magia, na segunda versão |
+| D4 | Parry | modelo da especificação §6.6 |
+| D5 | Travas de skill e bônus da primeira hora do dia | travas sim; bônus da primeira hora PODE, como dado |
+| D6 | Criação de personagem | tabela configurável, padrão 80 de stats e 100 de skills |
+| D7 | Fama e karma | faixas de ±15000 |
+| D8 | Mapa da primeira versão | recorte do mapa real lido da instalação, uma cidade e arredores; só para uso pessoal; build compartilhado no futuro usa mundo próprio |
+| D9 | Curva de luz | crepúsculos de 2 horas, com a alternativa em dados |
+| D10 | Bônus mágico de dano | +1 a +9 |
+| D11 | Corpos e itens no chão | corpos 7 + 7 min; itens 1 h; configuráveis |
