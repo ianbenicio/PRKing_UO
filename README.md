@@ -38,6 +38,7 @@ Mundo isométrico navegável; stats e skills com ganho; combate corpo a corpo co
 - [Especificação (cópia entregue)](docs/spec/especificacao.md) e [registro de entrega](docs/spec/README.md)
 - [Dossiê de pesquisa](docs/research/dossie-pesquisa-inicial.md)
 - [Fontes e política de evidências](docs/research/source-ledger.md)
+- [Integração de Claude e Codex com o Unity (pesquisa)](docs/research/2026-11-02-integracao-ia-unity.md)
 - [PRD](docs/prd/prd.md)
 - [Arquitetura Unity offline](docs/architecture/unity-offline-architecture.md)
 - [Sandbox de testes](docs/architecture/sandbox-de-testes.md)
