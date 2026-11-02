@@ -1,11 +1,11 @@
 ---
-origem: PRKing_REA@5d11c0d64b69d5c0a5801ed5e4e6766b8ce71c05 registros/uo-classic/especificacao.md
+origem: PRKing_REA@e5706ff7cf2912e454e4012c5ae4e3444ffb6c61 registros/uo-classic/especificacao.md
 entregue_em: 2026-11-02
-sha256_origem: 7711e74f04b261b47c85c74f83964fb38453c7ba66759bb67d1ff7f6df24183a
+sha256_origem: 806a8d5d1cc7073ed8f6e7e7e13952cfcff92653d7459d33517ac912772bccbd
 alvo: uo-classic
 destino: projeto Unity próprio em H:\King\Clientes e Projetos\PRKing_UO (fora deste repositório; exceção do item 8 do CLAUDE.md)
 era_de_referencia: T2A (The Second Age, 1998-10-01 a 2000-05-04)
-fontes: pesquisa pública (docs/research/2026-10-27-uo/); os adendos de 2026-10-28 e 2026-10-29 vêm da análise estática da cópia instalada (registros/uo-classic/01-analise.md); o texto original de 2026-10-28 não leu binário do alvo
+fontes: pesquisa pública (docs/research/2026-10-27-uo/; para as perguntas de volta de 2026-11-02, docs/research/2026-11-02-uo-pergunta-de-volta/); os adendos de 2026-10-28 e 2026-10-29 vêm da análise estática da cópia instalada (registros/uo-classic/01-analise.md); o texto original de 2026-10-28 não leu binário do alvo
 data: 2026-10-28 (adendos até 2026-11-02)
 ---
 
@@ -23,6 +23,7 @@ Este documento descreve **o que** o Ultima Online fazia na era T2A, em palavras 
   - `[Mn]` → `docs/research/2026-10-27-uo/02-personagem-combate-magia.md`;
   - `[Wn]` → `docs/research/2026-10-27-uo/03-mundo-npcs-crafting-ia.md`;
   - `[En]` → `docs/research/2026-10-27-uo/04-ecossistema-arquitetura-protocolo.md`.
+  - `[Vn]` → `docs/research/2026-11-02-uo-pergunta-de-volta/pesquisa.md` (adendo de 2026-11-02, perguntas de volta do PRKing_UO).
 - **(inferência)** marca dedução sem fonte direta. **(conflito)** marca fontes que discordam; a decisão fica na seção 16.
 - **Força da fonte**, quando importa: **oficial** (nota de publish da época), **wiki** (em geral descreve o jogo atual), **emulador** (código aberto, lido só para comportamento) ou **fórum/busca** (indício).
 - **Modelo numérico.** As notas oficiais de 1998–2000 dizem *quais* regras existiam e *quando*, mas quase nunca trazem números. Os números vêm em geral do ramo "pré-AOS" do RunUO, que reproduz o estado de 2002, logo antes do Age of Shadows, e não o T2A exato [M15–M59]. Toda regra numérica **DEVE** ficar em tabelas de dados, nunca fixa no código, para permitir dois perfis: "T2A estrito" e "pré-AOS final" [M] §7 (inferência de projeto).
@@ -113,7 +114,7 @@ O jogo combina as duas origens: **conteúdo próprio como base**, que é o padr�
 
 **Regras (DEVE):**
 
-1. **Identificadores neutros.** Itens, criaturas, tiles e sons do jogo têm IDs próprios. Uma tabela de correspondência liga cada ID próprio ao asset próprio e, quando existir, ao gráfico da instalação. Save, regras e dados de jogo usam só IDs próprios (seção 15). Trocar a origem não quebra o save.
+1. **Identificadores neutros.** Itens, criaturas, tiles e sons do jogo têm IDs próprios. Uma tabela de correspondência liga cada ID próprio ao asset próprio e, quando existir, ao gráfico da instalação. Save, regras e dados de jogo usam só IDs próprios (seção 15). Trocar a origem não quebra o save. *Adendo de 2026-11-02 (D12, pergunta de volta 1 do PRKing_UO):* "não quebra o save" quer dizer que os IDs de itens, criaturas, tiles e sons continuam válidos. Como mapa e arte vêm da mesma origem (regra 2) e o mapa próprio não copia o da instalação (regra 4), trocar a origem é sempre trocar de mundo: o save só carrega no mundo em que foi criado (seção 16, D12).
 2. **Uma origem por mundo.** A configuração escolhe o pacote de conteúdo do mundo, "próprio" ou "instalação", para o mapa e a arte. Não se misturam sprites das duas origens na mesma cena. A exceção é o recurso que falta na instalação: esse cai no conteúdo próprio, como na seção 3.8.
 3. **Leitura só em tempo de execução.** Não há importador que converta ou guarde em cache arquivos da instalação dentro do projeto. Nada lido da instalação vai para `Assets/`, para o git, para o build, para o save ou para capturas versionadas. Isso substitui a ideia de "importador offline" dos documentos do PRKing_UO (Anexo A, A5), porque uma conversão para disco criaria cópia derivada.
 4. **Conteúdo próprio não deriva da EA.** Arte, mapa e textos próprios são criados do zero. Não se decalca sprite, não se copia o desenho do mapa e não se usa a instalação como molde.
@@ -322,6 +323,18 @@ Leitura: ação difícil ensina mais, e o ganho desacelera perto dos caps (coere
 - Desde 1999-11-23: trava por skill com três estados — sobe, desce, para. A atrofia só ocorre quando outro skill sobe [M11].
 - Modelo (emulador): a cada ganho com o total no cap, um skill em "desce" perde o mesmo valor, com probabilidade T / c_T [M30].
 
+> **Adendo — corrigido (2026-11-02), pergunta de volta 2 do PRKing_UO.** Fonte: pesquisa pública [V1][V2][V5–V8]. Onde contradiz o item acima e a última regra do modelo da §5.4, vale este adendo.
+>
+> Ganho de skill e atrofia, nesta ordem (DEVE, salvo onde diz PODE):
+>
+> 1. O ganho só é tentado com a trava em "sobe" e o skill abaixo do próprio cap (§5.4). O tamanho do ganho `g` é sorteado primeiro (§5.4).
+> 2. **Atrofia antes da checagem do cap.** Com `T ≥ c_T`, antes de conferir se o ganho cabe, um skill perde `g` pontos. Isso abre o espaço do ganho na mesma ação [V5][V7][V8].
+> 3. **Qual skill desce:** o primeiro, na ordem fixa da lista de skills, que tem trava em "desce", não é o skill que está subindo e tem pelo menos `g` pontos. Só um por ganho. Skill em "desce" com menos de `g` é pulado: não desce em parte [V5][V7][V8]. A ordem de escolha fica em dados; a regra "menos usado", que valia antes das travas [V2], PODE ser alternativa (exige contar o uso de cada skill; inferência).
+> 4. **Nenhum skill pode descer:** não há atrofia, o ganho não cabe e nada muda, nem o skill que subiria nem os outros (oficial [V1]).
+> 5. **Não existe ganho parcial:** o skill sobe `g` inteiro se `T + g ≤ c_T`; senão, não sobe [V5][V7]. Abaixo do cap, quando `T + g > c_T` (só acontece com `s ≤ 10`, em que `g` vai até 0,4), não há atrofia nem ganho (emulador).
+> 6. **Correção do modelo:** a atrofia não é um sorteio com probabilidade `T / c_T` em qualquer total. No RunUO e no ServUO ela ocorre sempre que o total está no cap e nunca abaixo dele, o que bate com a regra oficial de que a atrofia só acontece quando outro skill sobe [V1]. O ModernUO usa de fato a probabilidade `T / c_T`, também abaixo do cap, e deixa o total passar do cap em até 0,3 **(conflito)** [V8]. Essa variante PODE existir como perfil de dados, não como padrão.
+> 7. O cap total vale só para o personagem do jogador; criaturas sobem sem ele (emulador) [V5].
+
 ## 6. Combate (pré-AOS)
 
 ### 6.1 Ritmo do golpe
@@ -329,6 +342,14 @@ Leitura: ação difícil ensina mais, e o ganho desacelera perto dos caps (coere
 - Até 1999-02-02 dependia da destreza (fórmula é lacuna); depois, da **estamina atual**. Equipar arma impõe pequena espera antes do primeiro golpe [M5].
 - Modelo (emulador): intervalo em segundos = 15000 / ((estamina_atual + 100) · V), com V = velocidade da arma. Com estamina 100: katana (V 58) ≈ 1,29 s; arco (V 20) 3,75 s; punhos (V 30) 2,5 s [M29][M57][M58][M59].
 - Só se inicia ataque contra alvo a até 15 tiles e com linha de visão (jan/1999) [M4].
+
+> **Adendo — pergunta de volta 3 do PRKing_UO (2026-11-02).** Fonte: pesquisa pública [V3][V4][V9–V13].
+>
+> - **Alcance de contato (DEVE):** cada arma tem um alcance máximo em tiles, em dados. Armas corpo a corpo, inclusive lanças e armas de haste, e luta desarmada: 1 tile [V10]. Para quando houver arma à distância: arco 10, besta 8 [V12]. A distância é a maior das diferenças em x e em y, então 1 tile cobre as oito casas vizinhas; a altura não entra nesse teste [V9][V11]. Os 15 tiles do item acima valem só para iniciar o ataque [V3].
+> - **Quando se confere (DEVE):** a cada tentativa de golpe, não só ao iniciar. Vencido o intervalo do golpe, confere-se nesta ordem: alvo ainda válido (vivo, no mesmo mapa e visível; senão, o combate termina), alvo dentro do alcance da arma, linha de visão. Passou tudo, o golpe sai [V9][V11].
+> - **Sem checagem no impacto (DEVE):** desde fev/1999, acerto e dano se resolvem no início do golpe (oficial [V4]), no mesmo instante da conferência acima [V10].
+> - **Timer com o alvo fora do alcance (DEVE):** o intervalo continua correndo; vencido, o golpe fica pronto e espera, conferido de novo a cada tique da simulação. Quando o alvo volta ao alcance, o golpe sai na hora, e o intervalo seguinte conta a partir dele. Golpes não se acumulam: esperar vários intervalos rende um golpe só [V9][V11].
+> - **Troca de arma (DEVE):** equipar ou tirar a arma reinicia a espera com o intervalo inteiro da arma que fica na mão (emulador [V10]; a nota oficial diz só "curto tempo de preparação" [V4]).
 
 ### 6.2 Acerto
 
@@ -601,6 +622,8 @@ Com `s` skill, `[s_min, s_max]` faixa do item e `c₀` chance mínima do sistema
 | Mago (PODE) | Cura-se quando falta vida; sorteia magias de dano, veneno, maldição e paralisia; teleporta quando bloqueado | [W62] |
 | Arqueiro (PODE) | Existe no emulador; detalhes não lidos | [W35] |
 
+> *Adendo de 2026-11-02 (pergunta de volta 3):* o "1 tile" da perseguição no corpo a corpo é a distância de luta da criatura, igual ao alcance de contato da §6.1 (adendo): maior das diferenças em x e y, oito direções [V9][V13].
+
 - **Escolha de alvo** por modo: só agressores, mais forte, mais fraco, mais próximo, ou "maligno" [W35].
 - **Chance de fuga** no corpo a corpo, rolada abaixo do limiar: 10% + diferença de vida em pontos percentuais se estiver em desvantagem, senão 10% [W60]. O comportamento do mago no emulador tem provável erro; não reproduzir [W62].
 - **Percepção** 16 tiles (conflito: 10 nos dados de cada criatura) [W35][W71]; abandona o alvo além de 3 × percepção [W60].
@@ -667,7 +690,10 @@ Resumo para versões futuras, detalhes em [W] §6:
 
 - O servidor emulado salva por instantâneo do mundo inteiro, com versão por tipo de entidade, em thread separada do laço [E37][E40][E44].
 - A reimplementação **DEVE** salvar e carregar o estado autoritativo da simulação (entidades, timers com tempo restante, relógio do mundo, semente do sorteio), nunca o estado visual (inferência a partir de [E39][E40]).
+
+> **Adendo — corrigido (2026-11-02), pergunta de volta 4 do PRKing_UO.** Onde o item acima diz "semente do sorteio", vale: o save **DEVE** guardar o **estado atual** do gerador de sorteio, que deixa a sequência continuar de onde parou, e não só a semente inicial, que faria cada carregamento repetir o começo da sequência. O save **DEVE** gravar também a versão do gerador usado pelas regras, para que uma troca de gerador entre versões do jogo seja percebida ao carregar. Continua sendo inferência a partir de [E39][E40]. Decisão do responsável na conversa de 2026-11-02.
 - Nada lido da instalação do jogador **DEVE** ir para o save; o save guarda só identificadores (inferência; seção 17).
+- *Adendo de 2026-11-02 (D12):* o save **DEVE** guardar a identidade do mundo (a origem do conteúdo e o pacote do mundo) e a revisão da geometria do mapa, e **DEVE** recusar, com mensagem, o carregamento em outro mundo ou em outra revisão da geometria. Levar personagem e inventário para outro mundo é **PODE**, fora da primeira versão (seção 16, D12).
 
 ## 16. Decisões do responsável
 
@@ -686,6 +712,9 @@ Resumo para versões futuras, detalhes em [W] §6:
 | D9 | Curva de luz | crepúsculos de 2 h do emulador, sem transição, ou dia das 6h à meia-noite [W20][W19] | emulador, com a alternativa em dados |
 | D10 | Bônus mágico de dano | +9 no nível máximo [W80] ou +5 [W82] | emulador (+1 a +9) |
 | D11 | Tempo de corpos e itens no chão | 7 + 7 min e 1 h do emulador, ou 15 min e "minutos" do original [W84][W87][W27][W85] | corpos 7 + 7 min; itens 1 h (configurável) |
+| D12 | Troca de origem entre mundos de geometria diferente (§3.0, §15; pergunta de volta 1 do PRKing_UO) | (a) save preso ao mundo em que foi criado; (b) migrar posições, regiões, spawns e containers para a outra geometria; (c) save preso ao mundo, com transferência só de personagem e inventário | (c), aceita em 2026-11-02: o save guarda a identidade do mundo e a revisão da geometria e só carrega no mesmo mundo (DEVE); levar personagem e inventário para outro mundo, num ponto de chegada do mundo novo, é PODE e fica fora da primeira versão; migrar posições, regiões, spawns e containers entre geometrias fica FORA (inferência de projeto a partir das regras 1, 2 e 4 da §3.0) |
+
+> **Adendo — D12 decidida em 2026-11-02.** O responsável aceitou, na conversa, a recomendação da D12 (pergunta de volta 1 do PRKing_UO). Pelas regras 2 e 4 da §3.0, mapa e arte vêm da mesma origem e o mapa próprio não copia o da instalação, então trocar a origem é trocar de mundo. A regra 1 garante que os IDs continuam válidos, o que permite a transferência de personagem e inventário como PODE. Os adendos da §3.0 (regra 1) e da §15 aplicam a decisão.
 
 ## 17. Riscos legais e de licença (não é parecer jurídico)
 

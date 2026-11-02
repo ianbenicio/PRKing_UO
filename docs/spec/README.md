@@ -6,9 +6,9 @@
 
 | Campo | Valor |
 |---|---|
-| Origem | `PRKing_REA@5d11c0d64b69d5c0a5801ed5e4e6766b8ce71c05`, arquivo `registros/uo-classic/especificacao.md` |
+| Origem | `PRKing_REA@e5706ff7cf2912e454e4012c5ae4e3444ffb6c61`, arquivo `registros/uo-classic/especificacao.md` |
 | Entregue em | 2026-11-02 |
-| SHA-256 do arquivo de origem | `7711e74f04b261b47c85c74f83964fb38453c7ba66759bb67d1ff7f6df24183a` |
+| SHA-256 do arquivo de origem | `806a8d5d1cc7073ed8f6e7e7e13952cfcff92653d7459d33517ac912772bccbd` |
 | Cabeçalho acrescentado na cópia | três linhas no topo do YAML: `origem`, `entregue_em` e `sha256_origem` |
 
 Conferência: tirando as linhas 2 a 4 da cópia, o SHA-256 do resto é igual ao da origem. A conta vale para o conteúdo guardado no git (fim de linha LF), não para a cópia de trabalho, que o `core.autocrlf` pode converter. Exemplo em Git Bash: `git show HEAD:docs/spec/especificacao.md | sed '2,4d' | sha256sum`.
@@ -27,7 +27,8 @@ Conferência: tirando as linhas 2 a 4 da cópia, o SHA-256 do resto é igual ao 
 | Data | Origem (commit do PRKing_REA) | O que trouxe | Commit no PRKing_UO |
 |---|---|---|---|
 | 2026-11-02 | `fd30f89` | Primeira entrega: seções 1–18, adendos até 2026-11-01 (D1–D11 e reavaliação legal) e Anexo A com a resolução de 2026-11-02 (A.4 e A.5) | `20f5e8c` |
-| 2026-11-02 | `5d11c0d` | Adendo A.6: decisões do responsável sobre A2, A7, A18 e A26; Anexo A resolvido; seção 2 marcada com o passo de 25 ms | commit de entrega desta versão |
+| 2026-11-02 | `5d11c0d` | Adendo A.6: decisões do responsável sobre A2, A7, A18 e A26; Anexo A resolvido; seção 2 marcada com o passo de 25 ms | `4cbf739` |
+| 2026-11-02 | `e5706ff` | Respostas às perguntas de volta 1 a 4: D12 na seção 16 e adendos na §3.0 (regra 1) e na §15 (pergunta 1); adendo corrigido na §5.5 sobre atrofia e ganho no cap (pergunta 2); adendo na §6.1 sobre alcance de contato e timer do golpe, com nota na §13.1 (pergunta 3); adendo corrigido na §15 sobre o estado do gerador de sorteio no save (pergunta 4); nova convenção de referência `[Vn]` | commit de entrega desta versão |
 
 ## Decisões do responsável
 
@@ -46,7 +47,7 @@ Quando a especificação não responde a uma pergunta do projeto:
 
 | # | Data | Seção | Pergunta | Decisão provisória | Situação |
 |---|---|---|---|---|---|
-| 1 | 2026-11-02 | §3.0 (regra 1), §15, D8 | Trocar a origem do conteúdo ("próprio" ↔ "instalação") vale só para arte e IDs, ou também para mundos com geometria diferente? Se vale para geometria, o que acontece com posições, regiões, spawns e containers que não existem no outro mapa? (revisão técnica, R06 e Q01) | Até a resposta, o save fica preso ao mundo em que foi criado (origem e revisão da geometria); carregar com outra geometria é recusado com mensagem. O sandbox e a primeira região usam só a origem "próprio". Não bloqueia a Fase 1 | aberta |
-| 2 | 2026-11-02 | §5.4, §5.5 | No ganho com o total no cap, a atrofia de um skill em "desce" acontece antes da checagem `T + ganho ≤ c_T` (abrindo espaço) ou só depois? Como se escolhe o skill que desce e o que acontece se nenhum puder descer ou se só parte do ganho couber? (Q02) | Ponto parado: a 1.1b usa skills fixas e o ganho entra na Fase 2 | aberta |
-| 3 | 2026-11-02 | §6.1, §13.1 | Qual é o alcance de contato do golpe corpo a corpo (distinto dos 15 tiles para iniciar o ataque) e quando ele é conferido: ao iniciar, a cada golpe ou no impacto? (Q03) | Na 1.1b: contato a 1 tile em qualquer das oito direções (coerente com "persegue até 1 tile" da §13.1), conferido no momento do golpe; fora do alcance, o golpe espera e o timer continua. Valor em dados | aberta |
-| 4 | 2026-11-02 | §15 | O DEVE "semente do sorteio" no save se cumpre guardando o estado atual do gerador? Guardar só a semente faz o load repetir o início da sequência (revisão técnica, R01) | A arquitetura (§12) guarda o estado atual do gerador, que inclui a continuação da sequência | aberta |
+| 1 | 2026-11-02 | §3.0 (regra 1), §15, D8 | Trocar a origem do conteúdo ("próprio" ↔ "instalação") vale só para arte e IDs, ou também para mundos com geometria diferente? Se vale para geometria, o que acontece com posições, regiões, spawns e containers que não existem no outro mapa? (revisão técnica, R06 e Q01) | Até a resposta, o save fica preso ao mundo em que foi criado (origem e revisão da geometria); carregar com outra geometria é recusado com mensagem. O sandbox e a primeira região usam só a origem "próprio". Não bloqueia a Fase 1 | respondida em 2026-11-02 (`PRKing_REA@034e52f`): decisão D12 do responsável. O save guarda a identidade do mundo e a revisão da geometria e só carrega no mesmo mundo; levar personagem e inventário para outro mundo é PODE, fora da primeira versão; migrar posições, spawns e containers fica FORA (seção 16, §3.0 regra 1, §15). A decisão provisória fica confirmada |
+| 2 | 2026-11-02 | §5.4, §5.5 | No ganho com o total no cap, a atrofia de um skill em "desce" acontece antes da checagem `T + ganho ≤ c_T` (abrindo espaço) ou só depois? Como se escolhe o skill que desce e o que acontece se nenhum puder descer ou se só parte do ganho couber? (Q02) | Ponto parado: a 1.1b usa skills fixas e o ganho entra na Fase 2 | respondida em 2026-11-02 (`PRKing_REA@5e92447`): a atrofia vem antes da checagem do cap e só com o total no cap; desce o primeiro skill em "desce", na ordem fixa da lista, com pelo menos o valor do ganho, que perde exatamente esse valor; sem skill elegível, nada muda; não há ganho parcial (§5.5, adendo corrigido) |
+| 3 | 2026-11-02 | §6.1, §13.1 | Qual é o alcance de contato do golpe corpo a corpo (distinto dos 15 tiles para iniciar o ataque) e quando ele é conferido: ao iniciar, a cada golpe ou no impacto? (Q03) | Na 1.1b: contato a 1 tile em qualquer das oito direções (coerente com "persegue até 1 tile" da §13.1), conferido no momento do golpe; fora do alcance, o golpe espera e o timer continua. Valor em dados | respondida em 2026-11-02 (`PRKing_REA@a31add6`): alcance por arma em dados, 1 tile para corpo a corpo (oito direções); conferido a cada tentativa de golpe; sem checagem no impacto; fora do alcance, o golpe fica pronto e espera, sem acumular (§6.1, adendo; nota na §13.1). A decisão provisória fica confirmada, com o detalhe do não acúmulo |
+| 4 | 2026-11-02 | §15 | O DEVE "semente do sorteio" no save se cumpre guardando o estado atual do gerador? Guardar só a semente faz o load repetir o início da sequência (revisão técnica, R01) | A arquitetura (§12) guarda o estado atual do gerador, que inclui a continuação da sequência | respondida em 2026-11-02 (`PRKing_REA@e5706ff`): o save guarda o estado atual do gerador, não só a semente, e a versão do gerador das regras (§15, adendo corrigido). A decisão provisória fica confirmada |
