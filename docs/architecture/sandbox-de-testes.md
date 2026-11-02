@@ -19,7 +19,7 @@ Ter uma cena pequena com tudo o que é preciso para testar ações, skills, comb
 4. **Estação é cenário de teste.** Cada estação traz um roteiro: uma sequência de comandos com semente fixa e os eventos esperados. O mesmo roteiro roda em EditMode (só domínio, sem cena) e em PlayMode (com apresentação). O teste manual e o automático cobrem a mesma coisa.
 5. **Depuração é comando.** Gerar item, ajustar skill, avançar o relógio etc. são comandos `Debug*` que passam pelo command bus e ficam no journal de comandos. Eles só são aceitos com as ferramentas de desenvolvimento ligadas (build de desenvolvimento). Um save feito depois de um comando de depuração fica marcado (`usedDevTools`).
 6. **Só conteúdo próprio.** Placeholders e arte própria; a origem "instalação" fica desligada no sandbox, que deve funcionar numa máquina sem o jogo de referência. Nada da EA no git, no build ou no save (especificação §3.0 e §17).
-7. **Reprodutível.** Semente fixa por estação e journal de comandos: um defeito encontrado no sandbox vira um arquivo de reprodução (semente + comandos) que outra pessoa ou um teste reexecuta.
+7. **Reprodutível.** Semente fixa por estação e journal de comandos com passo e sequência: um defeito encontrado no sandbox vira um arquivo de reprodução (estado inicial com o estado do RNG + comandos) que outra pessoa ou um teste reexecuta na mesma `simulationVersion` ([arquitetura §12](unity-offline-architecture.md)).
 
 ## 3. Layout (64 × 64 tiles, quatro chunks de 32 × 32)
 
@@ -107,11 +107,11 @@ As fases 5 em diante (agentes, mundo vivo) acrescentam estações próprias quan
 |---|---|
 | Geração | gerar item, criatura ou NPC por `ContentId`; limpar área; reset da estação |
 | Personagem | ajustar stat e skill; restaurar vida, estamina e mana; invulnerável; teleporte para estação |
-| Relógio | pausar; avançar um passo (25 ms); avançar N minutos de jogo, executando os passos sem desenhar, de forma determinística |
+| Relógio | pausar; avançar um passo (25 ms); avançar N minutos de jogo, executando os passos sem desenhar, de forma determinística, em lotes por frame, com progresso e cancelamento entre lotes (dez minutos são 24.000 passos) |
 | Visualização | grade de tiles, chunks e setores de 16 × 16; linha de visão; caminho calculado; estado e percepção da IA; log das rolagens de combate |
 | Reprodução | gravar e reexecutar semente + journal de comandos |
 
-O avanço de relógio substitui, para teste, a velocidade 2× da arquitetura (§9): ele roda os mesmos passos, só que sem desenhar, e dá o mesmo resultado que esperar.
+O avanço de relógio substitui, para teste, a velocidade 2× da arquitetura (§9): ele roda os mesmos passos, só que sem desenhar, e dá o mesmo resultado que esperar. Segue a política do scheduler da arquitetura (§9, R04): nenhum passo é pulado, e cancelar deixa o mundo num passo inteiro.
 
 ## 6. Fora deste documento
 

@@ -11,7 +11,7 @@ Fonte das regras: [especificação](../spec/especificacao.md) (sala limpa; alinh
 3. Unity apresenta o estado; não é a fonte de verdade do estado persistente.
 4. Definições autorais usam ScriptableObjects no Editor e um catálogo validado no build.
 5. Estado mutável usa DTOs versionados e snapshots atômicos; ScriptableObject não é save runtime.
-6. A simulação usa tick fixo e RNG injetável/determinístico.
+6. A simulação usa tick fixo, contado em inteiros, e RNG injetável/determinístico com estado salvo (seções 9 e 12).
 7. Mundo, render e agentes usam LOD. Nenhum facet grande vira milhões de GameObjects.
 8. Multiplayer futuro só poderá entrar por uma nova implementação de autoridade; não será antecipado com dependências de netcode.
 9. DOTS/Entities não é obrigatório no início. Só será adotado após profiling demonstrar um gargalo que o modelo híbrido não resolve.
@@ -215,11 +215,14 @@ Definição e instância nunca se confundem. Uma espada pode referenciar `item.s
 
 ### Render
 
-- terreno e statics batchados por atlas/material;
 - ordem de desenho da especificação §3.9: entre células, diagonais de x + y crescente; dentro da célula, prioridade por altura e tipo (terreno, objeto de fundo, objeto, personagem, efeito); `stableId` só desempata. Uma chave por `screenY` mistura altura e erra objetos altos;
+- **a ordem vem antes do batching** (revisão técnica, R03): o chunk de armazenamento não é a unidade de renderização. Só o terreno e o que nunca fica na frente de um personagem podem ser agrupados por chunk ou por atlas/material; objetos que podem cobrir personagens (paredes, árvores, statics altos, pilhas) são desenhados intercalados com eles, também entre chunks vizinhos. O modo Chunk do Tilemap Renderer não intercala objetos entre profundidades; o modo Individual intercala, com custo ([Unity: Tilemap Renderer](https://docs.unity.com/en-us/engine/6000.0/manual/unity2d/tilemaps/reference/tilemap-renderer)). A escolha entre Individual, SRP Batcher e renderer próprio sai de medição, depois que a galeria de desenho passa nos casos visuais;
+- picking escolhe o objeto desenhado por último sob o cursor, na mesma ordem do desenho;
 - pooling para mobiles, doors, effects e labels;
 - occlusion/fade para telhados e paredes, com o teto calculado a partir da célula do jogador (especificação §3.9);
-- no máximo um número limitado de renderers por chunk, nunca por tile.
+- número de renderers limitado por chunk, nunca um por tile, desde que a ordem acima continue certa.
+
+Os nomes ficam separados: bloco de leitura (8 × 8, origem "instalação"), chunk de armazenamento (32 × 32), setor de ativação da IA (16 × 16) e grupo de renderização. Os tamanhos podem diferir.
 
 ## 9. Simulação e tempo
 
@@ -234,6 +237,27 @@ Definição e instância nunca se confundem. Uma espada pode referenciar `item.s
 - no build de desenvolvimento, o relógio aceita pausar, avançar um passo e avançar N minutos rodando os passos sem desenhar; é assim que o [sandbox de testes](sandbox-de-testes.md) testa corpos, reposição e dia e noite sem esperar.
 
 Cada tick processa uma fila limitada. Sistemas pesados — path requests, economia global, planejamento distante — são distribuídos em slots para evitar spikes.
+
+### Política do scheduler (revisão técnica, R04)
+
+- **Tempo em ticks inteiros.** O tempo autoritativo é um contador inteiro de passos de 25 ms; timers, relógio do mundo e journal usam esse contador. Float só na interpolação visual. `Time.timeScale` não comanda o relógio autoritativo.
+- **Acumulador no adapter Unity.** O adapter soma o tempo real do frame e executa os passos devidos, até um **máximo de passos por frame** (valor em configuração; ponto de partida a confirmar no Profiler: 8 passos, 200 ms).
+- **Atraso não descarta passos.** Se o atraso passar do máximo, a simulação desacelera e fica atrás do tempo real; o excesso acumulado acima de um teto também configurável é abandonado como tempo real perdido, nunca como passos pulados. Nenhum evento vencido é saltado: todo passo executado roda inteiro. O mesmo vale para a volta de uma pausa ou da perda de foco: não há rajada de passos.
+- **Input na fronteira do tick.** Input e UI viram comandos que entram na fila e são aplicados no início do próximo passo, com o número desse passo.
+- **40 Hz é resolução, não obrigação.** Cada agente roda quando o prazo dele vence; ninguém recalcula toda a IA a cada passo.
+- **Avanço de N minutos em lotes.** Dez minutos são 24.000 passos. O avanço roda em lotes por frame, com progresso, e pode ser cancelado entre lotes; cancelar deixa o mundo num passo inteiro, nunca no meio de um.
+- **Mesmo resultado em qualquer taxa de quadros.** A mesma sequência de comandos com apresentação a 30, 60 ou 144 FPS, ou com frames lentos de 100 e 250 ms injetados, termina no mesmo estado (seção 14).
+
+### Sessão e ciclo de vida (revisão técnica, R05)
+
+A Unity 6.6 entra em Play Mode recarregando só a cena, sem domain reload, por padrão em projetos novos ([Unity 6.6: Enter Play Mode configurável](https://docs.unity.com/en-us/engine/6000.6/manual/programming-environment/code-reload-serialization/code-reload/code-reloading-editor/configurable-enter-play-mode)). Estado estático sobrevive de uma execução para a outra e pode parecer falha de determinismo. Regras:
+
+- um objeto de sessão (`GameSession`) é dono do relógio, do RNG, das filas, do mundo e do journal, com início e descarte explícitos; o Bootstrap cria a sessão e liga os adapters concretos;
+- Domain e Application não têm estado estático mutável; o estático inevitável nos adapters é limpo no ciclo de vida que a Unity documenta para o caso sem domain reload ([Unity 6.6: domain reloading](https://docs.unity.com/en-us/engine/6000.6/manual/programming-environment/code-reload-serialization/code-reload/code-reloading-editor/domain-reloading));
+- toda inscrição em evento tem dono e é desfeita no descarte da sessão;
+- ScriptableObjects de autoria nunca são alterados em execução: a sessão trabalha com cópias de dados;
+- tarefas assíncronas pertencem a uma sessão; resultado de sessão antiga é descartado e não povoa a nova;
+- reset e descarte podem ser chamados mais de uma vez sem efeito extra.
 
 ## 10. AI e população
 
@@ -303,8 +327,25 @@ Regras:
 - autosave por tempo e em transições seguras;
 - save manual nunca sobrescreve o único backup válido;
 - carregar falha com mensagem e opção de backup, não com mundo parcial;
-- o journal guarda os comandos aceitos desde o último snapshot; snapshot + semente + journal reexecutam a sessão de forma determinística, o que serve para recuperar o save e para reproduzir defeitos;
-- o save guarda o estado autoritativo (entidades, timers com tempo restante, relógio do mundo, semente do sorteio) e só IDs próprios; nada lido da instalação vai para o save, inclusive `screenshot.png`, que só é gravado com a origem "próprio" (especificação §3.0 e §15).
+- o journal guarda os comandos aceitos desde o último snapshot; snapshot + journal reexecutam a sessão de forma determinística, o que serve para recuperar o save e para reproduzir defeitos;
+- o save guarda o estado autoritativo (entidades, timers com tempo restante, relógio do mundo, **estado atual do gerador de sorteio**) e só IDs próprios; nada lido da instalação vai para o save, inclusive `screenshot.png`, que só é gravado com a origem "próprio" (especificação §3.0 e §15).
+
+### Determinismo e replay (revisão técnica, R01)
+
+- **Estado do RNG, não só a semente.** Recomeçar pela semente depois de um load repete o início da sequência. O snapshot guarda o estado interno do gerador, e o load continua dali.
+- **Gerador próprio, com versão.** As regras usam um algoritmo de RNG próprio, com número de versão gravado no save. `System.Random` não entra nas regras: a Microsoft não garante a mesma sequência entre versões do .NET ([Microsoft: System.Random](https://learn.microsoft.com/en-us/dotnet/api/system.random?view=net-10.0#notes-to-callers)). O RNG visual (partículas, variações de animação) é outro gerador e não consome do RNG das regras.
+- **Journal com tick e sequência.** Cada entrada guarda o passo em que o comando é executado, um número de sequência crescente e os parâmetros em forma canônica. Comandos do jogador e de depuração entram uma vez; decisões da IA não entram, porque o replay as regenera. O journal registra também o passo final, mesmo sem comandos novos.
+- **Ordem estável.** Entidades são processadas em ordem de ID, e empates entre eventos do mesmo passo têm desempate fixo. Conclusão de tarefa assíncrona (carga de chunk, por exemplo) nunca decide regra.
+- **Versão da simulação.** O snapshot grava `simulationVersion` e o hash do perfil de regras e do catálogo próprio. O replay só vale na mesma versão; entre versões, o load migra o snapshot ou recusa o replay com mensagem.
+- **Teste de aceite:** execução contínua, execução salva e carregada no meio e replay do journal terminam no mesmo estado e produzem as mesmas próximas rolagens.
+
+### Captura e publicação do save (revisão técnica, R02)
+
+- **Captura numa fronteira de tick.** O snapshot é uma cópia em DTO tirada entre dois passos, nunca no meio de um. Assim não há item no chão e na mochila ao mesmo tempo, nem ouro debitado sem mercadoria entregue. A serialização, a compressão e a escrita podem rodar em segundo plano sobre essa cópia.
+- **Geração completa antes do ponteiro.** Snapshot e journal de uma geração são escritos e conferidos primeiro; o `manifest.json` é trocado por último e só aponta para uma geração completa. O manifest guarda o último número de sequência do journal incluído no snapshot.
+- **Saves em fila.** Pedidos de save entram numa fila; um save antigo nunca termina por cima de um mais novo.
+- **Pasta.** Os saves ficam em `Application.persistentDataPath`, fora de `Assets/`, do repositório e da pasta do build, com empresa e produto estáveis ([Unity: persistentDataPath](https://docs.unity3d.com/6000.0/ScriptReference/Application-persistentDataPath.html)).
+- **Medição.** O Profiler mede separado o tempo de captura dentro do frame e a duração total do save.
 
 ## 13. UI
 
@@ -329,7 +370,9 @@ Regras:
 - economy ledger;
 - pathfinding e arrival points;
 - serialization, checksum e migrations;
-- determinismo com seed;
+- determinismo: contínuo, salvo e carregado no meio, e replay dão o mesmo estado e as mesmas próximas rolagens (seção 12);
+- scheduler: frames lentos de 100 e 250 ms injetados e apresentação a 30, 60 e 144 FPS dão o mesmo estado; pausa, retomada e cancelamento do avanço de tempo (seção 9);
+- save com falhas injetadas na captura, na escrita, na troca e na publicação; journal parcial; dois saves seguidos;
 - roteiros das estações do [sandbox](sandbox-de-testes.md) rodando só no domínio, sem cena.
 
 Testes com dados da instalação são só locais: pulados quando a instalação não existe, nunca viram fixture versionada nem rodam na integração contínua (especificação §3.0, regra 6).
@@ -337,9 +380,10 @@ Testes com dados da instalação são só locais: pulados quando a instalação 
 ### PlayMode
 
 - bootstrap e troca de scenes;
+- dez entradas seguidas em Play Mode no mesmo Editor, com domain reload ligado e desligado: uma reação por comando, nenhuma entidade ou inscrição de sessão anterior (seção 9);
 - world streaming sem duplicar entidades;
 - drag/drop e targeting;
-- render sorting e roof fade;
+- render sorting nas bordas de chunk (personagem à frente e atrás de árvore, parede e pilha) e roof fade;
 - save/load end-to-end;
 - roteiros das estações do sandbox com apresentação;
 - input remapping.
