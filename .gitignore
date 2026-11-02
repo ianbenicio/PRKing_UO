@@ -1,0 +1,9 @@
+# Dados do jogo de referência: nunca versionar (especificação §3.0 e §17).
+# O leitor opcional lê a instalação do jogador só em tempo de execução.
+*.mul
+*.uop
+*.idx
+*.def
+[Cc]liloc.*
+mobtypes.txt
+verdata.*
