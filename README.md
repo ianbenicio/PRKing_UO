@@ -27,7 +27,7 @@ O nome do produto é **Outrora** (adotado pelo responsável em 2026-11-01). Nunc
 - Modelo misto de conteúdo (decisão de 2026-10-28): conteúdo próprio como base e padrão; leitor opcional da instalação do próprio jogador, só em tempo de execução, desligado por padrão e só para uso pessoal (decisão de 2026-11-01). Não há importador offline nem cache em disco.
 - Nada da EA no git, no build, no save ou em capturas versionadas.
 - Nenhum build é distribuído por ora. Sem monetização, nem doação ligada ao jogo. Nenhum porte para outras plataformas sem nova avaliação do responsável.
-- Decisões D1–D11 da especificação aceitas em 2026-11-01; a D3 (resistência a magia) fica adiada até a magia. Resumo no [PRD](docs/prd/uo-offline-prd.md), §12.
+- Decisões D1–D11 da especificação aceitas em 2026-11-01; a D3 (resistência a magia) fica adiada até a magia. Resumo no [PRD](docs/prd/prd.md), §12.
 
 ## Primeira versão jogável (loop básico)
 
@@ -36,16 +36,18 @@ Mundo isométrico navegável; stats e skills com ganho; combate corpo a corpo co
 ## Documentação
 
 - [Especificação (cópia entregue)](docs/spec/especificacao.md) e [registro de entrega](docs/spec/README.md)
-- [Dossiê de pesquisa](docs/research/ultima-online-dossier.md)
+- [Dossiê de pesquisa](docs/research/dossie-pesquisa-inicial.md)
 - [Fontes e política de evidências](docs/research/source-ledger.md)
-- [PRD](docs/prd/uo-offline-prd.md)
+- [PRD](docs/prd/prd.md)
 - [Arquitetura Unity offline](docs/architecture/unity-offline-architecture.md)
 - [Roadmap](docs/roadmap.md)
 - [Story 1.1 — fundação e vertical slice](docs/stories/1.1-unity-foundation-and-local-vertical-slice.md)
 
-## Ferramentas auxiliares
+## Licença
 
-- Hardware Monitor Gadget (`packages/hardware-monitor-gadget/`) — overlay para Windows 10 com temperatura de CPU e GPU. O pacote não está neste repositório (`packages/` está vazio); o destino da Story 1.2 é decisão pendente do responsável (especificação, Anexo A, A2).
+Todos os direitos reservados enquanto o projeto for local (decisão do responsável em 2026-11-02). A licença será decidida antes de o repositório ficar público. Nenhuma licença permite copiar código de terceiros: a sala limpa vale em qualquer caso.
+
+A pasta e o repositório `PRKing_UO` serão renomeados para um nome neutro antes de o repositório ficar público (decisão de 2026-11-02, especificação, Anexo A, A7).
 
 ## Próximo passo operacional
 

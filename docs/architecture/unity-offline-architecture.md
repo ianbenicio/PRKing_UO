@@ -222,7 +222,8 @@ Definição e instância nunca se confundem. Uma espada pode referenciar `item.s
 
 ## 9. Simulação e tempo
 
-- tick autoritativo inicial: 10 Hz. **Decisão pendente (especificação, Anexo A, A18):** 10 Hz representa os passos de 400, 200 e 100 ms, mas não os ritmos de IA de 0,175 s e 0,25 s nem intervalos de golpe contínuos sem arredondar;
+- passo autoritativo de 25 ms (40 Hz) para timers de ação e de IA (decisão do responsável em 2026-11-02, especificação, Anexo A, A18): os tempos fixos de passo, conjuração e ritmo de IA (§2.2, §7.2 e §13.1) caem em múltiplos de 25 ms. A fórmula do intervalo de golpe (§6.1) continua contínua; o resultado é agendado no passo mais próximo, com erro de até 12,5 ms. Os números continuam em dados;
+- sistemas pesados rodam em fatias de 10 Hz (a cada 4 passos), como nos níveis de detalhe da seção 10;
 - timers guardados como tempo restante, para que salvar e carregar preserve o estado (especificação §2.1);
 - apresentação interpolada até o frame rate;
 - ações usam tempo de simulação, não `Time.deltaTime` diretamente;
@@ -247,7 +248,7 @@ Na primeira versão, as criaturas usam os arquétipos corpo a corpo e animal da 
 
 | Nível | Estado | Frequência | Exemplo |
 |---|---|---:|---|
-| L0 | visível | 10 Hz | combate, portas, animação, colisão |
+| L0 | visível | passo de 25 ms (ações e IA); fatias de 10 Hz (sistemas pesados) | combate, portas, animação, colisão |
 | L1 | região próxima | 1–2 Hz | viagem, trabalho, busca local |
 | L2 | distante | a cada 5–30 s | transações e deslocamento abstrato |
 | L3 | dormente | por evento/agenda | dormir, estoque estacionário |

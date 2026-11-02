@@ -173,10 +173,10 @@ Esse recorte prova o loop antes de multiplicar mapas, skills e itens.
 ## 12. Decisões ainda pendentes
 
 - direção de arte autoral;
-- licença do próprio Outrora;
-- tique autoritativo da simulação (especificação, Anexo A, A18);
-- nome da pasta do repositório e dos arquivos que citam o jogo de referência (Anexo A, A7);
-- destino da Story 1.2 (Anexo A, A2);
+- licença do próprio Outrora — **decidida por ora (2026-11-02):** todos os direitos reservados enquanto o projeto for local; a licença será decidida antes de publicar (Anexo A, A26);
+- tique autoritativo da simulação — **resolvida (2026-11-02):** passo de 25 ms para timers de ação e IA, sistemas pesados em fatias de 10 Hz; o intervalo de golpe segue a fórmula contínua (Anexo A, A18);
+- nome da pasta do repositório e dos arquivos que citam o jogo de referência — **resolvida em parte (2026-11-02):** arquivos renomeados para `docs/prd/prd.md` e `docs/research/dossie-pesquisa-inicial.md`; a pasta e o repositório são renomeados antes de o repositório ficar público. Menção descritiva ao jogo é permitida, nunca como nome ou marca (Anexo A, A7);
+- destino da Story 1.2 — **resolvida (2026-11-02):** a story do gadget de temperatura saiu deste repositório (Anexo A, A2);
 - regras exatas do profile `Classic` — **resolvida (2026-11-02):** valem as seções 4 a 13 da especificação, no perfil T2A, com as decisões abaixo;
 - possibilidade ou não de importador pessoal de dados legítimos — **resolvida:** não há importador; há leitor opcional em tempo de execução, só para uso pessoal (decisões de 2026-10-28 e 2026-11-01, especificação §3.0 e §17);
 - intensidade padrão de morte, crime e PK simulado — **resolvida para a primeira versão:** o padrão são as regras da especificação (§8.3 e §9); intensidade configurável fica para depois;
